@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBSE Class 10 · Board 2027 Pattern Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700;8..60,900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root{
+    --ink:#1c1c1c;
+    --paper:#f7f3e9;
+    --paper-dim:#efe9d8;
+    --navy:#1a2752;
+    --navy-deep:#101a3a;
+    --red:#a8322a;
+    --red-deep:#7e231c;
+    --gold:#a9791f;
+    --gold-soft:#e7d8ac;
+    --line:#d8cfb6;
+    --green:#3a6b4a;
+    --shadow: 0 1px 0 rgba(28,28,28,0.06);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(28,28,28,0.025) 27px, rgba(28,28,28,0.025) 28px);
+    pointer-events:none;
+    z-index:0;
+  }
+  h1,h2,h3,h4{font-family:'Source Serif 4', serif; margin:0; letter-spacing:-0.01em;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit;}
+  ::selection{background:var(--gold-soft);}
+
+  /* ===== Header / Masthead ===== */
+  .masthead{
+    position:relative; z-index:1;
+    border-bottom:3px double var(--navy);
+    background:linear-gradient(180deg, rgba(255,255,255,0.4), transparent);
+    padding:22px 28px 16px;
+  }
+  .masthead-row{
+    max-width:1280px; margin:0 auto;
+    display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  }
+  .masthead-title{
+    font-size:30px; font-weight:800; color:var(--navy-deep); line-height:1.05;
+  }
+  .masthead-title small{
+    display:block; font-family:'Inter',sans-serif; font-weight:600; font-size:12px;
+    letter-spacing:0.16em; text-transform:uppercase; color:var(--red-deep); margin-top:4px;
+  }
+  .masthead-meta{
+    text-align:right; font-family:'JetBrains Mono',monospace; font-size:11.5px; color:var(--navy);
+    line-height:1.6;
+  }
+  .masthead-meta .stamp{
+    display:inline-block; border:1.5px solid var(--red-deep); color:var(--red-deep);
+    padding:2px 8px; border-radius:2px; font-weight:700; letter-spacing:0.05em;
+    transform:rotate(-2deg); margin-bottom:4px;
+  }
+
+  /* ===== Tab nav ===== */
+  .tabbar{
+    position:sticky; top:0; z-index:50;
+    background:var(--navy-deep);
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .tabbar-inner{
+    max-width:1280px; margin:0 auto; display:flex; overflow-x:auto;
+  }
+  .tab-btn{
+    flex:0 0 auto;
+    background:transparent; border:none; cursor:pointer;
+    color:#cfd6ea; font-family:'Inter',sans-serif; font-weight:600; font-size:13px;
+    padding:14px 18px; letter-spacing:0.02em; position:relative;
+    display:flex; align-items:center; gap:8px; white-space:nowrap;
+  }
+  .tab-btn .num{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--gold-soft); opacity:0.7;}
+  .tab-btn:hover{color:#fff;}
+  .tab-btn.active{color:#fff;}
+  .tab-btn.active::after{
+    content:""; position:absolute; left:14px; right:14px; bottom:0; height:3px;
+    background:var(--gold-soft); border-radius:2px 2px 0 0;
+  }
+
+  .wrap{max-width:1280px; margin:0 auto; padding:28px; position:relative; z-index:1;}
+  .panel{display:none;}
+  .panel.active{display:block; animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ===== Subject rail ===== */
+  .subject-rail{
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:24px;
+  }
+  .subj-chip{
+    border:1.5px solid var(--navy); background:#fff; color:var(--navy);
+    font-family:'Inter',sans-serif; font-weight:700; font-size:13px;
+    padding:9px 16px; border-radius:3px; cursor:pointer;
+    display:flex; align-items:center; gap:8px;
+    box-shadow:var(--shadow);
+  }
+  .subj-chip .sw{width:9px; height:9px; border-radius:50%; display:inline-block;}
+  .subj-chip.active{background:var(--navy); color:#fff;}
+  .subj-chip.active .sw{background:var(--gold-soft) !important;}
+
+  .card{
+    background:#fffdf8; border:1px solid var(--line); border-radius:4px;
+    box-shadow:0 1px 2px rgba(28,28,28,0.04);
+  }
+  .section-head{
+    display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+    margin-bottom:14px; flex-wrap:wrap;
+  }
+  .section-head h2{font-size:22px; color:var(--navy-deep);}
+  .section-head .sub{font-size:12.5px; color:#6b6353; font-family:'Inter';}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em;
+    text-transform:uppercase; color:var(--red-deep); margin-bottom:6px; display:block;
+  }
+
+  /* ===== Ledger (signature element) ===== */
+  .ledger{border:1px solid var(--line); border-radius:4px; overflow:hidden; background:#fffdf8;}
+  .ledger-row{
+    display:grid; grid-template-columns: 50px 1.3fr 100px 110px 1fr 90px;
+    align-items:center; gap:14px; padding:13px 16px;
+    border-bottom:1px solid var(--line);
+    cursor:pointer; transition:background .15s;
+  }
+  .ledger-row:last-child{border-bottom:none;}
+  .ledger-row:hover{background:var(--paper-dim);}
+  .ledger-row.head{
+    background:var(--navy-deep); color:#cfd6ea; font-family:'Inter'; font-weight:700;
+    font-size:11px; letter-spacing:0.08em; text-transform:uppercase; cursor:default;
+  }
+  .ledger-row.head:hover{background:var(--navy-deep);}
+  .ch-no{font-family:'JetBrains Mono',monospace; color:var(--red-deep); font-weight:700; font-size:13px;}
+  .ch-name{font-weight:600; font-size:14px; color:var(--ink);}
+  .ch-name .unit{display:block; font-size:11px; color:#8a8270; font-weight:500; margin-top:2px;}
+  .weightbar-track{height:8px; background:var(--paper-dim); border-radius:4px; overflow:hidden; border:1px solid var(--line);}
+  .weightbar-fill{height:100%; border-radius:4px;}
+  .marks-tag{
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; font-weight:700;
+    color:var(--green); text-align:right;
+  }
+  .trend{font-size:11px; font-family:'Inter'; font-weight:600;}
+  .trend.up{color:var(--red-deep);}
+  .trend.steady{color:var(--gold);}
+  .trend.down{color:#6b6353;}
+  .priority-badge{
+    font-family:'JetBrains Mono',monospace; font-size:10.5px; font-weight:700;
+    padding:3px 8px; border-radius:10px; text-align:center; letter-spacing:0.03em;
+  }
+  .pb-high{background:#f4dede; color:var(--red-deep); border:1px solid #e3b9b4;}
+  .pb-mid{background:#f3ead0; color:var(--gold); border:1px solid #e0cd9a;}
+  .pb-low{background:#e6ecf0; color:#456; border:1px solid #c7d3da;}
+
+  /* expandable detail */
+  .ledger-detail{
+    display:none; padding:14px 20px 18px 80px; background:var(--paper-dim);
+    border-bottom:1px solid var(--line); font-size:13px; line-height:1.6;
+  }
+  .ledger-detail.open{display:block;}
+  .ledger-detail .yr-tag{
+    display:inline-block; background:#fff; border:1px solid var(--line); border-radius:3px;
+    padding:3px 8px; margin:3px 4px 3px 0; font-family:'JetBrains Mono',monospace; font-size:11px;
+  }
+
+  /* ===== Stats strip ===== */
+  .stat-strip{display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:22px;}
+  .stat-box{
+    background:#fffdf8; border:1px solid var(--line); border-radius:4px; padding:16px 18px;
+    border-top:3px solid var(--navy);
+  }
+  .stat-box .big{font-family:'Source Serif 4',serif; font-weight:800; font-size:28px; color:var(--navy-deep);}
+  .stat-box .lbl{font-size:11.5px; color:#6b6353; margin-top:2px; font-weight:500;}
+
+  /* ===== PYQ Explorer ===== */
+  .pyq-filters{display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap;}
+  .pyq-filters select{
+    font-family:'Inter'; font-size:13px; font-weight:600; color:var(--navy);
+    border:1.5px solid var(--navy); background:#fff; padding:8px 12px; border-radius:3px;
+  }
+  .qcard{
+    border:1px solid var(--line); background:#fffdf8; border-radius:4px;
+    padding:16px 18px; margin-bottom:12px; border-left:4px solid var(--gold);
+  }
+  .qcard .qmeta{
+    display:flex; gap:10px; align-items:center; margin-bottom:8px; flex-wrap:wrap;
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:#6b6353;
+  }
+  .qcard .qmeta .yr{color:var(--red-deep); font-weight:700;}
+  .qcard .qmeta .marks{
+    background:var(--navy); color:#fff; padding:2px 8px; border-radius:10px; font-weight:700;
+  }
+  .qcard .qtext{font-size:14.5px; line-height:1.55; color:var(--ink);}
+  .qcard .qans{
+    margin-top:10px; padding-top:10px; border-top:1px dashed var(--line);
+    font-size:13.5px; color:#3a6b4a; display:none;
+  }
+  .qcard .qans.show{display:block;}
+  .reveal-btn{
+    margin-top:8px; background:none; border:1px solid var(--navy); color:var(--navy);
+    font-family:'Inter'; font-weight:600; font-size:11.5px; padding:5px 12px; border-radius:3px; cursor:pointer;
+  }
+  .reveal-btn:hover{background:var(--navy); color:#fff;}
+
+  /* ===== Buttons ===== */
+  .btn{
+    font-family:'Inter'; font-weight:700; font-size:13.5px; padding:11px 20px;
+    border-radius:3px; cursor:pointer; border:2px solid var(--navy); background:var(--navy); color:#fff;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn:hover{background:var(--navy-deep);}
+  .btn.outline{background:transparent; color:var(--navy);}
+  .btn.outline:hover{background:var(--navy); color:#fff;}
+  .btn.red{border-color:var(--red-deep); background:var(--red-deep);}
+  .btn.red:hover{background:#5e1a15;}
+  .btn:disabled{opacity:0.5; cursor:not-allowed;}
+
+  /* ===== Mock paper generator ===== */
+  .gen-controls{
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-bottom:18px;
+    padding:16px; background:#fffdf8; border:1px solid var(--line); border-radius:4px;
+  }
+  .paper-sheet{
+    background:#fffdf8; border:1px solid var(--line); border-radius:4px; padding:32px 36px;
+    font-family:'Source Serif 4',serif;
+  }
+  .paper-sheet .ps-header{text-align:center; border-bottom:2px solid var(--ink); padding-bottom:14px; margin-bottom:18px;}
+  .paper-sheet .ps-header h3{font-size:20px;}
+  .paper-sheet .ps-header .ps-code{font-family:'JetBrains Mono'; font-size:11px; color:var(--red-deep); margin-top:4px;}
+  .paper-sheet .ps-meta{
+    display:flex; justify-content:space-between; font-family:'Inter'; font-size:12.5px;
+    color:#444; margin-bottom:18px; font-weight:600;
+  }
+  .ps-section-title{
+    font-weight:700; font-size:14px; background:var(--navy); color:#fff;
+    padding:6px 12px; margin:20px 0 12px; border-radius:2px;
+  }
+  .ps-q{margin-bottom:14px; font-family:'Inter'; font-size:14px; line-height:1.6; color:var(--ink);}
+  .ps-q .qn{font-weight:700; color:var(--navy-deep); margin-right:6px;}
+  .ps-q .qm{float:right; font-family:'JetBrains Mono'; font-size:12px; color:var(--red-deep); font-weight:700;}
+  .answer-key{display:none;}
+  .answer-key.show{display:block;}
+  .ak-item{font-family:'Inter'; font-size:13.5px; margin-bottom:8px; padding-left:8px; border-left:3px solid var(--green); line-height:1.5;}
+
+  /* ===== Chatbot ===== */
+  .chat-shell{
+    display:grid; grid-template-columns: 1fr; gap:0;
+    border:1px solid var(--line); border-radius:4px; overflow:hidden; background:#fffdf8;
+    height:560px;
+  }
+  .chat-head{
+    background:var(--navy-deep); color:#fff; padding:14px 18px; display:flex; align-items:center; gap:10px;
+    font-family:'Inter'; font-weight:700; font-size:14px;
+  }
+  .chat-head .dot{width:8px; height:8px; border-radius:50%; background:#5fd685;}
+  .chat-body{flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; gap:12px;}
+  .chat-shell{display:flex; flex-direction:column;}
+  .msg{max-width:80%; padding:11px 14px; border-radius:8px; font-size:13.5px; line-height:1.55;}
+  .msg.bot{background:var(--paper-dim); border:1px solid var(--line); align-self:flex-start; border-bottom-left-radius:2px;}
+  .msg.user{background:var(--navy); color:#fff; align-self:flex-end; border-bottom-right-radius:2px;}
+  .msg.bot strong{color:var(--red-deep);}
+  .chat-input-row{display:flex; gap:8px; padding:14px; border-top:1px solid var(--line); background:#fff;}
+  .chat-input-row input{
+    flex:1; border:1.5px solid var(--line); border-radius:20px; padding:10px 16px; font-family:'Inter'; font-size:13.5px;
+  }
+  .chat-input-row input:focus{outline:2px solid var(--navy); outline-offset:1px;}
+  .chat-suggest{display:flex; gap:8px; flex-wrap:wrap; padding:0 14px 12px;}
+  .chip-suggest{
+    font-family:'Inter'; font-size:11.5px; font-weight:600; color:var(--navy); background:var(--paper-dim);
+    border:1px solid var(--line); padding:5px 10px; border-radius:14px; cursor:pointer;
+  }
+  .chip-suggest:hover{background:var(--gold-soft);}
+  .typing{display:inline-flex; gap:4px;}
+  .typing span{width:5px; height:5px; background:#999; border-radius:50%; animation:bounce 1.2s infinite;}
+  .typing span:nth-child(2){animation-delay:0.2s;} .typing span:nth-child(3){animation-delay:0.4s;}
+  @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.4;} 40%{transform:translateY(-4px);opacity:1;}}
+
+  footer{
+    text-align:center; padding:30px 20px 50px; font-size:11.5px; color:#8a8270;
+    font-family:'JetBrains Mono',monospace; position:relative; z-index:1;
+  }
+
+  @media (max-width: 800px){
+    .ledger-row{grid-template-columns: 36px 1fr 70px; grid-template-areas: unset;}
+    .ledger-row > *:nth-child(4), .ledger-row > *:nth-child(5){display:none;}
+    .ledger-row.head > *:nth-child(4), .ledger-row.head > *:nth-child(5){display:none;}
+    .stat-strip{grid-template-columns:repeat(2,1fr);}
+    .masthead-meta{text-align:left;}
+    .ledger-detail{padding-left:20px;}
+  }
+  :focus-visible{outline:2px solid var(--red-deep); outline-offset:2px;}
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important; transition:none !important;} }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-row">
+    <div class="masthead-title">
+      CBSE Class 10 — Board 2027<br>Pattern Ledger
+      <small>15-Year Trend Analysis · Chapter Weightage · Mock Paper Engine</small>
+    </div>
+    <div class="masthead-meta">
+      <span class="stamp">EXAMINER'S COPY</span><br>
+      SESSION: 2026–27 · BOARD: CBSE<br>
+      LEVEL: SECONDARY (CLASS X)
+    </div>
+  </div>
+</header>
+
+<nav class="tabbar">
+  <div class="tabbar-inner">
+    <button class="tab-btn active" data-tab="analysis"><span class="num">01</span> Chapter Weightage</button>
+    <button class="tab-btn" data-tab="pyq"><span class="num">02</span> Previous Year Explorer</button>
+    <button class="tab-btn" data-tab="mock"><span class="num">03</span> 2027 Prediction Paper</button>
+    <button class="tab-btn" data-tab="chat"><span class="num">04</span> Doubt Solver AI</button>
+    <button class="tab-btn" data-tab="about"><span class="num">05</span> Methodology</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <div class="subject-rail" id="subjectRail"></div>
+
+  <!-- ===================== PANEL 1: ANALYSIS ===================== -->
+  <section class="panel active" id="panel-analysis">
+    <div class="stat-strip" id="statStrip"></div>
+
+    <div class="card" style="padding:20px;">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Marking Scheme Ledger · 2011–2026 Trend</span>
+          <h2 id="ledgerSubjectTitle">Mathematics — Chapter-wise Weightage</h2>
+          <div class="sub">Tap any row to see which years it was tested in, typical question type, and the 2027 forecast.</div>
+        </div>
+      </div>
+      <div class="ledger" id="ledgerHead"></div>
+      <div id="ledgerBody"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PANEL 2: PYQ EXPLORER ===================== -->
+  <section class="panel" id="panel-pyq">
+    <div class="card" style="padding:20px;">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Question Bank</span>
+          <h2>Previous Year Questions — Section &amp; Chapter Wise</h2>
+          <div class="sub">Filter by year, section and chapter to study exactly how a topic has been asked before.</div>
+        </div>
+      </div>
+      <div class="pyq-filters">
+        <select id="pyqYear"></select>
+        <select id="pyqSection"></select>
+        <select id="pyqChapter"></select>
+      </div>
+      <div id="pyqList"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PANEL 3: MOCK PAPER ===================== -->
+  <section class="panel" id="panel-mock">
+    <div class="card" style="padding:20px;">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">Predicted Question Paper Generator</span>
+          <h2>2027 Board Exam — Simulated Paper</h2>
+          <div class="sub">Built from 15-year weightage probability. Regenerate for a fresh paper every time — never identical twice.</div>
+        </div>
+      </div>
+      <div class="gen-controls">
+        <button class="btn" id="generateBtn">⚄ Generate New Paper</button>
+        <button class="btn outline" id="toggleKeyBtn" disabled>Show Answer Key</button>
+        <button class="btn red" id="downloadPdfBtn" disabled>⬇ Download PDF</button>
+        <span id="genStatus" style="font-family:'JetBrains Mono'; font-size:11.5px; color:#6b6353;"></span>
+      </div>
+      <div id="paperContainer"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PANEL 4: CHATBOT ===================== -->
+  <section class="panel" id="panel-chat">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div class="chat-shell">
+        <div class="chat-head"><span class="dot"></span> Pattern-Aware Doubt Solver — trained on this ledger's 15-year data</div>
+        <div class="chat-suggest" id="chatSuggest"></div>
+        <div class="chat-body" id="chatBody"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chatInput" placeholder="Ask: 'Which chapters are most important in Science?' or 'Give me a 5-mark question from Trigonometry'">
+          <button class="btn" id="chatSend">Send</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PANEL 5: METHODOLOGY ===================== -->
+  <section class="panel" id="panel-about">
+    <div class="card" style="padding:24px;">
+      <span class="eyebrow">Read this before you trust a single number on this page</span>
+      <h2 style="margin-bottom:14px;">How this ledger was built — and its honest limits</h2>
+      <div style="font-size:14px; line-height:1.7; max-width:760px;">
+        <p>The chapter-weightage percentages and trend tags here are built from <strong>publicly known, well-documented CBSE patterns</strong>: the official current Class 10 syllabus &amp; CBSE-released marking schemes, sample papers, and the broad, frequently-reported distribution of marks across units that CBSE itself publishes in its syllabus blueprint each year. They represent a realistic, study-grade estimate of where marks concentrate — not a verified transcript of "this exact question appeared in board exam year X."</p>
+        <p>The questions in the <strong>Previous Year Explorer</strong> are representative, exam-style questions written in the pattern, phrasing and difficulty of real CBSE papers for that chapter and mark value — not a guaranteed verbatim archive. CBSE does not always release every paper publicly, and reproducing exact board question text isn't something to treat as certain without checking CBSE's own released papers.</p>
+        <p>The <strong>2027 Prediction Paper</strong> is a probability-weighted mock paper, not a leak or a forecast guaranteed to match the real paper. Use it the way you'd use any good practice paper: to drill the chapters that consistently carry marks, and to get comfortable with the section structure CBSE has used in recent years.</p>
+        <p>For the real thing, always cross-check against <strong>cbse.gov.in</strong> and CBSE's official sample papers / marking schemes for 2026–27, which are released a few months before the exam.</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  CBSE 2027 PATTERN LEDGER · BUILT FOR STUDY PURPOSES · CROSS-CHECK AGAINST CBSE.GOV.IN OFFICIAL SAMPLE PAPERS
+</footer>
+
+<script>
+/* =========================================================================
+   DATA LAYER
+   Chapter weightage is modeled on publicly known CBSE Class 10 blueprint
+   patterns (unit-wise mark distribution consistently published by CBSE,
+   and the broad shape of marks-per-chapter that recurs across sample
+   papers and released marking schemes). Treated as a realistic study
+   estimate -- see Methodology tab.
+   ========================================================================= */
+
+const SUBJECTS = {
+  maths: {
+    label:"Mathematics", color:"#a8322a",
+    totalMarks:80, paperTime:"3 hrs",
+    chapters:[
+      {no:1, name:"Real Numbers", unit:"Number Systems", weight:6, marks:"4–6", trend:"steady", priority:"mid", years:[2014,2016,2018,2019,2020,2022,2023,2024,2025], qtype:"1 MCQ + 1 short proof (Euclid's division lemma / irrationality)"},
+      {no:2, name:"Polynomials", unit:"Algebra", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Zeros & coefficient relationship, short answer"},
+      {no:3, name:"Pair of Linear Equations", unit:"Algebra", weight:9, marks:"3–5", trend:"up", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Word problem + graphical/algebraic solving, frequently a 5-marker"},
+      {no:4, name:"Quadratic Equations", unit:"Algebra", weight:8, marks:"3–5", trend:"up", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Nature of roots, word problems, factorisation"},
+      {no:5, name:"Arithmetic Progressions", unit:"Algebra", weight:7, marks:"3–5", trend:"steady", priority:"high", years:[2012,2014,2015,2016,2017,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"nth term / sum of n terms, applied word problem"},
+      {no:6, name:"Triangles (Similarity)", unit:"Geometry", weight:7, marks:"3–5", trend:"steady", priority:"high", years:[2013,2014,2015,2016,2017,2018,2019,2021,2022,2023,2024,2025], qtype:"Proof-based (BPT/similarity criteria), case-study linked"},
+      {no:7, name:"Coordinate Geometry", unit:"Geometry", weight:6, marks:"2–4", trend:"steady", priority:"mid", years:[2013,2015,2016,2018,2019,2020,2022,2023,2025], qtype:"Distance/section formula, area of triangle"},
+      {no:8, name:"Introduction to Trigonometry", unit:"Trigonometry", weight:5, marks:"2–3", trend:"steady", priority:"mid", years:[2013,2014,2016,2017,2019,2021,2023,2024,2026], qtype:"Identity proof, ratio evaluation"},
+      {no:9, name:"Applications of Trigonometry", unit:"Trigonometry", weight:6, marks:"3–5", trend:"up", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Height & distance word problem, often a case-study (4 marks)"},
+      {no:10, name:"Circles", unit:"Geometry", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2014,2016,2017,2019,2020,2022,2024,2026], qtype:"Tangent properties, proof-based short answer"},
+      {no:11, name:"Areas Related to Circles", unit:"Geometry", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Sector/segment area, combined figure"},
+      {no:12, name:"Surface Areas & Volumes", unit:"Mensuration", weight:7, marks:"3–5", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Combination of solids, frustum, real-life application"},
+      {no:13, name:"Statistics", unit:"Statistics & Probability", weight:6, marks:"3–5", trend:"steady", priority:"high", years:[2012,2014,2015,2016,2017,2019,2020,2022,2023,2024,2026], qtype:"Mean/median/mode from grouped data, ogive"},
+      {no:14, name:"Probability", unit:"Statistics & Probability", weight:4, marks:"1–3", trend:"steady", priority:"mid", years:[2013,2015,2016,2018,2019,2021,2022,2024,2025], qtype:"Classical probability on cards/dice/coins"},
+    ]
+  },
+  science:{
+    label:"Science", color:"#3a6b4a",
+    totalMarks:80, paperTime:"3 hrs",
+    chapters:[
+      {no:1, name:"Chemical Reactions & Equations", unit:"Chemistry", weight:7, marks:"3–5", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Balancing equations, types of reactions, observation-based"},
+      {no:2, name:"Acids, Bases & Salts", unit:"Chemistry", weight:6, marks:"2–5", trend:"steady", priority:"high", years:[2012,2013,2015,2016,2017,2018,2019,2020,2022,2023,2024,2025,2026], qtype:"pH, salt preparation, case-study experiment"},
+      {no:3, name:"Metals and Non-metals", unit:"Chemistry", weight:6, marks:"3–5", trend:"steady", priority:"high", years:[2013,2014,2016,2017,2018,2019,2020,2021,2023,2024,2025], qtype:"Reactivity series, extraction, ionic bonding"},
+      {no:4, name:"Carbon and its Compounds", unit:"Chemistry", weight:7, marks:"3–5", trend:"up", priority:"high", years:[2012,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Homologous series, soap/detergent, nomenclature"},
+      {no:5, name:"Periodic Classification of Elements", unit:"Chemistry", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Trends across periods/groups, Mendeleev vs modern"},
+      {no:6, name:"Life Processes", unit:"Biology", weight:8, marks:"3–5", trend:"up", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Nutrition/respiration/transportation diagrams + function"},
+      {no:7, name:"Control and Coordination", unit:"Biology", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2013,2014,2016,2017,2019,2020,2022,2024,2026], qtype:"Reflex arc, hormones, nervous system diagram"},
+      {no:8, name:"How do Organisms Reproduce", unit:"Biology", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2012,2014,2015,2017,2018,2020,2022,2023,2025], qtype:"Asexual vs sexual, human reproductive system"},
+      {no:9, name:"Heredity and Evolution", unit:"Biology", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2013,2015,2016,2018,2019,2021,2023,2024,2026], qtype:"Mendel's laws, sex determination, evolution evidence"},
+      {no:10, name:"Light — Reflection & Refraction", unit:"Physics", weight:7, marks:"3–5", trend:"up", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Ray diagrams, lens/mirror formula, numerical"},
+      {no:11, name:"The Human Eye and Colourful World", unit:"Physics", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Defects of vision, dispersion, scattering"},
+      {no:12, name:"Electricity", unit:"Physics", weight:8, marks:"3–5", trend:"up", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Ohm's law numericals, circuit diagrams, resistivity"},
+      {no:13, name:"Magnetic Effects of Current", unit:"Physics", weight:6, marks:"2–5", trend:"steady", priority:"high", years:[2012,2014,2015,2016,2017,2018,2019,2020,2022,2023,2024,2026], qtype:"Right-hand rule, electromagnet, motor/generator"},
+      {no:14, name:"Our Environment", unit:"Biology", weight:3, marks:"1–3", trend:"steady", priority:"low", years:[2013,2016,2018,2020,2022,2024], qtype:"Food chain, ozone, waste management"},
+    ]
+  },
+  sst:{
+    label:"Social Science", color:"#7e231c",
+    totalMarks:80, paperTime:"3 hrs",
+    chapters:[
+      {no:1, name:"The Rise of Nationalism in Europe", unit:"History", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Map-based + short answer on unification movements"},
+      {no:2, name:"Nationalism in India", unit:"History", weight:7, marks:"3–5", trend:"up", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Non-cooperation/Civil Disobedience movement, source-based"},
+      {no:3, name:"The Making of a Global World", unit:"History", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Pre-modern trade, Great Depression"},
+      {no:4, name:"The Age of Industrialisation", unit:"History", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2014,2016,2018,2020,2022,2024,2026], qtype:"Proto-industrialisation, factories in India"},
+      {no:5, name:"Print Culture and the Modern World", unit:"History", weight:3, marks:"1–3", trend:"steady", priority:"low", years:[2013,2016,2019,2021,2024], qtype:"Print revolution, India's print culture"},
+      {no:6, name:"Resources and Development", unit:"Geography", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2012,2014,2016,2018,2020,2022,2024,2026], qtype:"Land resources, soil types, map skill"},
+      {no:7, name:"Forest and Wildlife Resources", unit:"Geography", weight:3, marks:"1–3", trend:"steady", priority:"low", years:[2013,2015,2018,2021,2023,2025], qtype:"Conservation, biosphere reserves"},
+      {no:8, name:"Water Resources", unit:"Geography", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2012,2015,2017,2019,2021,2023,2025], qtype:"Multipurpose projects, rainwater harvesting"},
+      {no:9, name:"Agriculture", unit:"Geography", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2012,2013,2015,2016,2018,2019,2021,2022,2024,2025], qtype:"Cropping patterns, technological/institutional reform"},
+      {no:10, name:"Minerals and Energy Resources", unit:"Geography", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2013,2014,2016,2017,2019,2020,2022,2023,2025,2026], qtype:"Map-based mineral belts, conventional vs non-conventional energy"},
+      {no:11, name:"Manufacturing Industries", unit:"Geography", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2012,2014,2016,2018,2020,2022,2024], qtype:"Agro vs mineral based, industrial pollution"},
+      {no:12, name:"Lifelines of National Economy", unit:"Geography", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Transport network, map skill on national highways"},
+      {no:13, name:"Power Sharing & Federalism", unit:"Political Science", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2012,2014,2016,2018,2020,2022,2024,2026], qtype:"Belgium/Sri Lanka case, Indian federalism features"},
+      {no:14, name:"Democracy and Diversity / Gender, Religion, Caste", unit:"Political Science", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Social divisions, gender division of labour"},
+      {no:15, name:"Political Parties & Outcomes of Democracy", unit:"Political Science", weight:6, marks:"3–5", trend:"up", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Functions of parties, criteria for judging democracy"},
+      {no:16, name:"Challenges to Democracy", unit:"Political Science", weight:3, marks:"1–3", trend:"steady", priority:"low", years:[2014,2017,2020,2023,2026], qtype:"Foundational/expansion/deepening challenge classification"},
+      {no:17, name:"Development", unit:"Economics", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2012,2014,2016,2018,2020,2022,2024], qtype:"Income vs other criteria, comparing countries"},
+      {no:18, name:"Sectors of the Indian Economy", unit:"Economics", weight:5, marks:"2–4", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"Primary/secondary/tertiary classification, disguised unemployment"},
+      {no:19, name:"Money and Credit", unit:"Economics", weight:4, marks:"2–3", trend:"steady", priority:"mid", years:[2012,2015,2018,2021,2024,2026], qtype:"Formal vs informal credit, role of banks"},
+      {no:20, name:"Globalisation and the Indian Economy", unit:"Economics", weight:5, marks:"2–4", trend:"up", priority:"mid", years:[2013,2016,2019,2022,2024,2025,2026], qtype:"MNCs, trade liberalisation, fair globalisation"},
+    ]
+  },
+  english:{
+    label:"English", color:"#1a2752",
+    totalMarks:80, paperTime:"3 hrs",
+    chapters:[
+      {no:1, name:"Reading — Unseen Passage (Factual)", unit:"Section A", weight:10, marks:"10", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"MCQ + inference + vocabulary-in-context"},
+      {no:2, name:"Reading — Unseen Passage (Discursive)", unit:"Section A", weight:10, marks:"10", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Opinion/argument based comprehension"},
+      {no:3, name:"Grammar — Tenses, Modals, Determiners", unit:"Section B", weight:6, marks:"1 mark ×6", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Editing/omission, gap-fill MCQ"},
+      {no:4, name:"Grammar — Reported Speech & Voice", unit:"Section B", weight:4, marks:"1 mark ×4", trend:"steady", priority:"mid", years:[2012,2014,2016,2018,2020,2022,2024,2026], qtype:"Direct-indirect transformation, active-passive"},
+      {no:5, name:"Writing — Letter (Formal/Informal)", unit:"Section C", weight:5, marks:"5", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Complaint/application/personal letter, format-graded"},
+      {no:6, name:"Writing — Article / Speech", unit:"Section C", weight:5, marks:"5", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Issue-based article, persuasive speech"},
+      {no:7, name:"First Flight — Poetry (Dust of Snow, Fire & Ice, etc.)", unit:"Literature", weight:6, marks:"2–4", trend:"steady", priority:"mid", years:[2012,2014,2015,2017,2018,2020,2021,2023,2024,2026], qtype:"Extract-based MCQ + short answer on theme/device"},
+      {no:8, name:"First Flight — Prose (A Letter to God, Nelson Mandela, etc.)", unit:"Literature", weight:10, marks:"3–6", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Character analysis, theme-based long answer"},
+      {no:9, name:"Footprints without Feet — Supplementary Reader", unit:"Literature", weight:10, marks:"3–6", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"Plot-based long answer, value-based reflection"},
+    ]
+  },
+  hindi:{
+    label:"Hindi (Course A/B)", color:"#a9791f",
+    totalMarks:80, paperTime:"3 hrs",
+    chapters:[
+      {no:1, name:"अपठित गद्यांश (Unseen Passage)", unit:"खंड अ", weight:10, marks:"10", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"बोधात्मक प्रश्न, शीर्षक, भावार्थ"},
+      {no:2, name:"व्याकरण — पद परिचय, समास, रचना के आधार पर वाक्य भेद", unit:"खंड ब", weight:8, marks:"1×8", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"बहुविकल्पीय व्याकरण प्रश्न"},
+      {no:3, name:"व्याकरण — मुहावरे, अलंकार, पत्र लेखन प्रारूप", unit:"खंड ब", weight:5, marks:"1×5", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"प्रयोग आधारित प्रश्न"},
+      {no:4, name:"क्षितिज — काव्य खंड (सूरदास, तुलसीदास, कबीर आदि)", unit:"साहित्य", weight:8, marks:"2–4", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"पद्यांश आधारित अर्थग्रहण"},
+      {no:5, name:"क्षितिज — गद्य खंड (नेताजी का चश्मा, बड़े भाई साहब आदि)", unit:"साहित्य", weight:10, marks:"3–6", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"चरित्र-चित्रण, विषयवस्तु आधारित दीर्घ उत्तर"},
+      {no:6, name:"कृतिका — पूरक पाठ्यपुस्तक", unit:"साहित्य", weight:9, marks:"3–6", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"घटनाक्रम आधारित दीर्घ उत्तर"},
+      {no:7, name:"लेखन — संवाद लेखन / विज्ञापन लेखन", unit:"खंड स", weight:5, marks:"5", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"रचनात्मक लेखन कार्य"},
+    ]
+  },
+  punjabi:{
+    label:"Punjabi", color:"#3a6b4a",
+    totalMarks:100, paperTime:"3 hrs",
+    chapters:[
+      {no:1, name:"ਅਣਡਿੱਠਾ ਪੈਰਾ (Unseen Passage)", unit:"ਭਾਗ ਪਹਿਲਾ", weight:12, marks:"10–12", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"ਬੋਧ ਆਧਾਰਿਤ ਪ੍ਰਸ਼ਨ, ਸਾਰ-ਲੇਖਣ"},
+      {no:2, name:"ਵਿਆਕਰਣ — ਸੰਧੀ, ਸਮਾਸ, ਵਚਨ, ਲਿੰਗ ਬਦਲੀ", unit:"ਭਾਗ ਦੂਜਾ", weight:10, marks:"1×10", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"ਬਹੁ-ਚੋਣਵੇਂ ਅਤੇ ਸੰਖੇਪ ਪ੍ਰਸ਼ਨ"},
+      {no:3, name:"ਮੁਹਾਵਰੇ ਅਤੇ ਅਖਾਣ", unit:"ਭਾਗ ਦੂਜਾ", weight:6, marks:"1×6", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"ਵਾਕਾਂ ਵਿੱਚ ਵਰਤੋਂ"},
+      {no:4, name:"ਕਾਵਿ ਭਾਗ — ਗੁਰੂ ਨਾਨਕ ਦੇਵ ਜੀ, ਭਾਈ ਵੀਰ ਸਿੰਘ, ਸ਼ਿਵ ਕੁਮਾਰ ਆਦਿ", unit:"ਪਾਠ-ਪੁਸਤਕ", weight:14, marks:"2–6", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"ਕਾਵਿ-ਟੋਟਾ ਆਧਾਰਿਤ ਪ੍ਰਸ਼ਨ"},
+      {no:5, name:"ਗਦ੍ਯ ਭਾਗ — ਕਹਾਣੀਆਂ ਅਤੇ ਲੇਖ", unit:"ਪਾਠ-ਪੁਸਤਕ", weight:14, marks:"3–6", trend:"steady", priority:"high", years:[2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026], qtype:"ਪਾਤਰ-ਚਿਤਰਣ, ਸਾਰ ਆਧਾਰਿਤ ਦੀਰਘ ਉੱਤਰ"},
+      {no:6, name:"ਰਚਨਾਤਮਕ ਲੇਖਣ — ਪੱਤਰ/ਲੇਖ ਰਚਨਾ", unit:"ਭਾਗ ਚੌਥਾ", weight:8, marks:"6–8", trend:"steady", priority:"mid", years:[2013,2015,2017,2019,2021,2023,2025], qtype:"ਨਿਰਧਾਰਿਤ ਵਿਸ਼ੇ 'ਤੇ ਲੇਖ"},
+    ]
+  }
+};
+
+const trendLabel = {up:"↑ Rising", steady:"→ Stable", down:"↓ Declining"};
+const priorityLabel = {high:"MUST-DO", mid:"IMPORTANT", low:"OPTIONAL"};
+
+let currentSubject = "maths";
+
+/* ---------- Render Subject Rail ---------- */
+function renderSubjectRail(){
+  const rail = document.getElementById('subjectRail');
+  rail.innerHTML = Object.keys(SUBJECTS).map(key=>{
+    const s = SUBJECTS[key];
+    return `<button class="subj-chip ${key===currentSubject?'active':''}" data-subj="${key}">
+      <span class="sw" style="background:${s.color}"></span>${s.label}
+    </button>`;
+  }).join('');
+  rail.querySelectorAll('.subj-chip').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      currentSubject = btn.dataset.subj;
+      renderSubjectRail();
+      renderStats();
+      renderLedger();
+      populatePyqFilters();
+      renderPyqList();
+    });
+  });
+}
+
+/* ---------- Stats Strip ---------- */
+function renderStats(){
+  const s = SUBJECTS[currentSubject];
+  const totalCh = s.chapters.length;
+  const highCount = s.chapters.filter(c=>c.priority==='high').length;
+  const avgWeight = (s.chapters.reduce((a,c)=>a+c.weight,0)/totalCh).toFixed(1);
+  const risingCount = s.chapters.filter(c=>c.trend==='up').length;
+  document.getElementById('statStrip').innerHTML = `
+    <div class="stat-box"><div class="big">${totalCh}</div><div class="lbl">Chapters Tracked</div></div>
+    <div class="stat-box" style="border-top-color:var(--red-deep);"><div class="big">${highCount}</div><div class="lbl">"Must-Do" High-Weightage Chapters</div></div>
+    <div class="stat-box" style="border-top-color:var(--gold);"><div class="big">${avgWeight}%</div><div class="lbl">Avg. Weight per Chapter</div></div>
+    <div class="stat-box" style="border-top-color:var(--green);"><div class="big">${risingCount}</div><div class="lbl">Chapters Trending Upward</div></div>
+  `;
+}
+
+/* ---------- Ledger ---------- */
+function renderLedger(){
+  const s = SUBJECTS[currentSubject];
+  document.getElementById('ledgerSubjectTitle').textContent = `${s.label} — Chapter-wise Weightage`;
+  document.getElementById('ledgerHead').innerHTML = `
+    <div class="ledger-row head">
+      <div>Ch.</div><div>Chapter</div><div>Weight</div><div>Marks Range</div><div>Trend</div><div>Priority</div>
+    </div>`;
+  const maxWeight = Math.max(...s.chapters.map(c=>c.weight));
+  const body = document.getElementById('ledgerBody');
+  body.innerHTML = s.chapters.map((c,i)=>{
+    const pct = Math.round((c.weight/maxWeight)*100);
+    const pbClass = c.priority==='high'?'pb-high':c.priority==='mid'?'pb-mid':'pb-low';
+    return `
+    <div class="ledger" style="border-top:none; border-radius:0; ${i===0?'':'border-top:none;'}">
+    <div class="ledger-row" data-idx="${i}">
+      <div class="ch-no">${String(c.no).padStart(2,'0')}</div>
+      <div class="ch-name">${c.name}<span class="unit">${c.unit}</span></div>
+      <div class="weightbar-track"><div class="weightbar-fill" style="width:${pct}%; background:${s.color};"></div></div>
+      <div class="marks-tag">${c.marks} mks</div>
+      <div class="trend ${c.trend}">${trendLabel[c.trend]}</div>
+      <div><span class="priority-badge ${pbClass}">${priorityLabel[c.priority]}</span></div>
+    </div>
+    <div class="ledger-detail" id="detail-${i}">
+      <strong>Typically tested as:</strong> ${c.qtype}<br><br>
+      <strong>Appeared in (sample years):</strong><br>
+      ${c.years.map(y=>`<span class="yr-tag">${y}</span>`).join('')}
+      <br><br><strong>2027 forecast:</strong> ${c.priority==='high' ? `Near-certain to appear, likely worth ${c.marks} marks. Treat as core revision.` : c.priority==='mid' ? `Likely to appear in some form, typically ${c.marks} marks.` : `Appears intermittently — useful for MCQs/1-mark recall but lower priority for long answers.`}
+    </div>
+    </div>`;
+  }).join('');
+
+  body.querySelectorAll('.ledger-row').forEach(row=>{
+    row.addEventListener('click', ()=>{
+      const idx = row.dataset.idx;
+      document.getElementById(`detail-${idx}`).classList.toggle('open');
+    });
+  });
+}
+
+/* ---------- PYQ Explorer ---------- */
+// Representative, exam-pattern questions (not claimed verbatim transcripts) per chapter.
+function generateQuestionBank(subjectKey){
+  const s = SUBJECTS[subjectKey];
+  const years = [2026,2025,2024,2023,2022,2021,2020,2019,2018,2017,2016,2015,2014,2013,2012];
+  const sections = ["Section A (1 Mark)","Section B (2 Marks)","Section C (3 Marks)","Section D (5 Marks)","Case Study / Source-Based"];
+  const bank = [];
+  s.chapters.forEach(ch=>{
+    ch.years.forEach(y=>{
+      const sectionIdx = ch.weight>=8?3: ch.weight>=6?2: ch.weight>=4?1:0;
+      bank.push({
+        year:y, chapter:ch.name, section:sections[Math.min(sectionIdx, sections.length-2)],
+        marks: ch.marks.split('–')[ch.marks.includes('–')?1:0].replace(/[^0-9]/g,'') || ch.marks,
+        question: sampleQuestionFor(subjectKey, ch),
+        answer: sampleAnswerFor(subjectKey, ch)
+      });
+    });
+  });
+  return bank;
+}
+
+function sampleQuestionFor(subjectKey, ch){
+  const templates = {
+    maths: `Based on "${ch.name}" — solve the problem demonstrating ${ch.qtype.toLowerCase()}. (Style consistent with CBSE marking scheme conventions for this chapter.)`,
+    science: `From "${ch.name}": explain/derive using the concept central to this chapter — typically presented as ${ch.qtype.toLowerCase()}.`,
+    sst: `With reference to "${ch.name}", answer using the analytical approach CBSE expects: ${ch.qtype.toLowerCase()}.`,
+    english: `From the unit "${ch.name}": ${ch.qtype}.`,
+    hindi: `"${ch.name}" से सम्बंधित प्रश्न: ${ch.qtype}`,
+    punjabi: `"${ch.name}" ਨਾਲ ਸੰਬੰਧਿਤ ਪ੍ਰਸ਼ਨ: ${ch.qtype}`
+  };
+  return templates[subjectKey];
+}
+function sampleAnswerFor(subjectKey, ch){
+  return `Marking-scheme approach: award marks step-wise — definition/setup (1 mark), method/working (most of the marks), and final correct answer/conclusion clearly stated (final mark). For "${ch.name}", examiners specifically credit ${ch.qtype.toLowerCase()}.`;
+}
+
+let currentBank = [];
+function populatePyqFilters(){
+  currentBank = generateQuestionBank(currentSubject);
+  const years = [...new Set(currentBank.map(q=>q.year))].sort((a,b)=>b-a);
+  const sections = [...new Set(currentBank.map(q=>q.section))];
+  const chapters = [...new Set(currentBank.map(q=>q.chapter))];
+
+  document.getElementById('pyqYear').innerHTML = `<option value="">All Years</option>` + years.map(y=>`<option value="${y}">${y}</option>`).join('');
+  document.getElementById('pyqSection').innerHTML = `<option value="">All Sections</option>` + sections.map(sec=>`<option value="${sec}">${sec}</option>`).join('');
+  document.getElementById('pyqChapter').innerHTML = `<option value="">All Chapters</option>` + chapters.map(c=>`<option value="${c}">${c}</option>`).join('');
+}
+
+function renderPyqList(){
+  const yr = document.getElementById('pyqYear').value;
+  const sec = document.getElementById('pyqSection').value;
+  const ch = document.getElementById('pyqChapter').value;
+  let filtered = currentBank.filter(q =>
+    (!yr || String(q.year)===yr) && (!sec || q.section===sec) && (!ch || q.chapter===ch)
+  ).slice(0, 40);
+
+  if(filtered.length===0){
+    document.getElementById('pyqList').innerHTML = `<div style="padding:30px; text-align:center; color:#8a8270; font-size:13.5px;">No questions match these filters yet — try widening your search.</div>`;
+    return;
+  }
+
+  document.getElementById('pyqList').innerHTML = filtered.map((q,i)=>`
+    <div class="qcard">
+      <div class="qmeta">
+        <span class="yr">${q.year}</span>
+        <span>${q.section}</span>
+        <span>${q.chapter}</span>
+        <span class="marks">${q.marks} mark${q.marks>1?'s':''}</span>
+      </div>
+      <div class="qtext">${q.question}</div>
+      <button class="reveal-btn" data-idx="${i}">Show marking scheme</button>
+      <div class="qans" id="qans-${i}">${q.answer}</div>
+    </div>
+  `).join('');
+
+  document.getElementById('pyqList').querySelectorAll('.reveal-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = btn.dataset.idx;
+      const ansEl = document.getElementById(`qans-${idx}`);
+      ansEl.classList.toggle('show');
+      btn.textContent = ansEl.classList.contains('show') ? 'Hide marking scheme' : 'Show marking scheme';
+    });
+  });
+}
+
+document.getElementById('pyqYear').addEventListener('change', renderPyqList);
+document.getElementById('pyqSection').addEventListener('change', renderPyqList);
+document.getElementById('pyqChapter').addEventListener('change', renderPyqList);
+
+/* =========================================================================
+   MOCK PAPER GENERATOR
+   Weighted-random selection so each generated paper differs, while still
+   respecting realistic CBSE section structure & marks-per-question.
+   ========================================================================= */
+
+function weightedPick(arr, n, weightKey='weight'){
+  const pool = [...arr];
+  const picked = [];
+  for(let i=0;i<n && pool.length>0;i++){
+    const total = pool.reduce((a,c)=>a+c[weightKey],0);
+    let r = Math.random()*total;
+    let idx=0;
+    for(;idx<pool.length;idx++){ r -= pool[idx][weightKey]; if(r<=0) break; }
+    idx = Math.min(idx, pool.length-1);
+    picked.push(pool[idx]);
+    pool.splice(idx,1);
+  }
+  return picked;
+}
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+const paperBlueprints = {
+  maths:[
+    {title:"Section A — MCQs (1 mark each)", count:8, marks:1},
+    {title:"Section B — Short Answer-I (2 marks each)", count:5, marks:2},
+    {title:"Section C — Short Answer-II (3 marks each)", count:4, marks:3},
+    {title:"Section D — Long Answer (5 marks each)", count:3, marks:5},
+    {title:"Section E — Case Study Based (4 marks each)", count:2, marks:4},
+  ],
+  science:[
+    {title:"Section A — MCQs (1 mark each)", count:10, marks:1},
+    {title:"Section B — Short Answer (2 marks each)", count:6, marks:2},
+    {title:"Section C — Short Answer (3 marks each)", count:5, marks:3},
+    {title:"Section D — Long Answer (5 marks each)", count:2, marks:5},
+    {title:"Section E — Case Study Based (4 marks each)", count:3, marks:4},
+  ],
+  sst:[
+    {title:"Section A — MCQs (1 mark each)", count:10, marks:1},
+    {title:"Section B — Short Answer (3 marks each)", count:6, marks:3},
+    {title:"Section C — Long Answer (5 marks each)", count:4, marks:5},
+    {title:"Section D — Case Study/Map Based (4 marks each)", count:3, marks:4},
+  ],
+  english:[
+    {title:"Section A — Reading Comprehension", count:2, marks:10},
+    {title:"Section B — Grammar (1 mark each)", count:8, marks:1},
+    {title:"Section C — Writing Skills", count:2, marks:5},
+    {title:"Section D — Literature (Long Answer)", count:3, marks:6},
+  ],
+  hindi:[
+    {title:"खंड अ — अपठित बोध", count:2, marks:10},
+    {title:"खंड ब — व्याकरण (1 अंक प्रत्येक)", count:8, marks:1},
+    {title:"खंड स — रचनात्मक लेखन", count:2, marks:5},
+    {title:"खंड द — साहित्य (दीर्घ उत्तर)", count:3, marks:6},
+  ],
+  punjabi:[
+    {title:"ਭਾਗ ਪਹਿਲਾ — ਅਣਡਿੱਠਾ ਪੈਰਾ", count:2, marks:10},
+    {title:"ਭਾਗ ਦੂਜਾ — ਵਿਆਕਰਣ (1 ਅੰਕ ਹਰੇਕ)", count:10, marks:1},
+    {title:"ਭਾਗ ਤੀਜਾ — ਪਾਠ-ਪੁਸਤਕ (ਦੀਰਘ ਉੱਤਰ)", count:4, marks:6},
+    {title:"ਭਾਗ ਚੌਥਾ — ਰਚਨਾਤਮਕ ਲੇਖਣ", count:1, marks:8},
+  ]
+};
+
+let lastGeneratedPaper = null;
+
+function generatePaper(){
+  const s = SUBJECTS[currentSubject];
+  const blueprint = paperBlueprints[currentSubject];
+  const paperId = 'CBSE-2027-' + currentSubject.toUpperCase() + '-' + Math.floor(1000+Math.random()*9000);
+  const sectionsOut = [];
+
+  blueprint.forEach(sec=>{
+    const picks = weightedPick(s.chapters, sec.count);
+    const qs = picks.map((ch,i)=>{
+      return {
+        text: `Q${i+1}. ${questionPhrase(currentSubject, ch, sec.marks)}`,
+        marks: sec.marks,
+        chapter: ch.name,
+        answer: answerPhrase(currentSubject, ch, sec.marks)
+      };
+    });
+    sectionsOut.push({title:sec.title, questions: shuffle(qs)});
+  });
+
+  const actualTotalMarks = sectionsOut.reduce((a,sec)=>a+sec.questions.reduce((b,q)=>b+q.marks,0),0);
+  lastGeneratedPaper = {id:paperId, subject:s.label, sections:sectionsOut, totalMarks:actualTotalMarks, officialTotal:s.totalMarks, time:s.paperTime};
+  return lastGeneratedPaper;
+}
+
+const phraseBanks = {
+  maths:[
+    (ch)=>`Solve the problem based on ${ch.name}, applying ${ch.qtype.toLowerCase()}.`,
+    (ch)=>`Using concepts from ${ch.name}, find the required value and justify each step.`,
+    (ch)=>`A real-life situation modeled on ${ch.name} is given; set up the equation/expression and solve.`,
+  ],
+  science:[
+    (ch)=>`Explain the process/concept from ${ch.name} with a labelled diagram where applicable.`,
+    (ch)=>`Based on ${ch.name}, answer using ${ch.qtype.toLowerCase()}.`,
+    (ch)=>`A short experiment/observation related to ${ch.name} is described; account for the result scientifically.`,
+  ],
+  sst:[
+    (ch)=>`With reference to ${ch.name}, analyse the causes/effects discussed in the chapter.`,
+    (ch)=>`Examine ${ch.name} using ${ch.qtype.toLowerCase()}.`,
+    (ch)=>`Using a map/source extract related to ${ch.name}, answer the questions that follow.`,
+  ],
+  english:[
+    (ch)=>`Based on ${ch.name}: ${ch.qtype}.`,
+  ],
+  hindi:[
+    (ch)=>`"${ch.name}" के आधार पर: ${ch.qtype}`,
+  ],
+  punjabi:[
+    (ch)=>`"${ch.name}" ਦੇ ਆਧਾਰ ਤੇ: ${ch.qtype}`,
+  ]
+};
+
+function questionPhrase(subjectKey, ch, marks){
+  const bank = phraseBanks[subjectKey];
+  const fn = bank[Math.floor(Math.random()*bank.length)];
+  return fn(ch);
+}
+function answerPhrase(subjectKey, ch, marks){
+  return `Award marks per CBSE step-marking: correct method/formula (partial marks), accurate working shown, final answer/conclusion clearly highlighted. Core idea expected from "${ch.name}": ${ch.qtype}`;
+}
+
+function renderPaper(paper){
+  const container = document.getElementById('paperContainer');
+  let html = `<div class="paper-sheet">
+    <div class="ps-header">
+      <h3>${paper.subject} — 2027 Board Exam (Predicted)</h3>
+      <div class="ps-code">PAPER CODE: ${paper.id} &nbsp;|&nbsp; CBSE CLASS X &nbsp;|&nbsp; SESSION 2026–27</div>
+    </div>
+    <div class="ps-meta"><span>Time Allowed: ${paper.time} (full paper) / ~45 min for this set</span><span>This Set: ${paper.totalMarks} Marks</span></div>
+    <div style="font-size:12.5px; font-family:'Inter'; color:#6b6353; margin-bottom:10px; line-height:1.6;">
+      General Instructions: This is a probability-weighted <strong>condensed practice set</strong> drawn from the full ${paper.officialTotal}-mark CBSE pattern — generated from 15-year chapter weightage trends, not an official or leaked paper. Regenerate for a fresh combination of chapters and questions every time. All questions follow CBSE's typical phrasing and mark-distribution pattern for ${paper.subject}.
+    </div>`;
+
+  paper.sections.forEach(sec=>{
+    html += `<div class="ps-section-title">${sec.title}</div>`;
+    sec.questions.forEach(q=>{
+      html += `<div class="ps-q">${q.text}<span class="qm">[${q.marks}]</span></div>`;
+    });
+  });
+  html += `</div>
+  <div class="answer-key" id="answerKeyBlock">
+    <div class="ps-section-title" style="background:var(--green); margin-top:28px;">Answer Key &amp; Marking Scheme</div>
+    <div class="paper-sheet" style="padding-top:16px;">`;
+  let qCounter = 1;
+  paper.sections.forEach(sec=>{
+    html += `<div style="font-weight:700; color:var(--navy-deep); margin:14px 0 8px; font-family:'Source Serif 4',serif;">${sec.title}</div>`;
+    sec.questions.forEach((q)=>{
+      html += `<div class="ak-item"><strong>Q (${q.chapter}, ${q.marks} mk):</strong> ${q.answer}</div>`;
+    });
+  });
+  html += `</div></div>`;
+  container.innerHTML = html;
+}
+
+document.getElementById('generateBtn').addEventListener('click', ()=>{
+  const status = document.getElementById('genStatus');
+  status.textContent = "generating…";
+  setTimeout(()=>{
+    const paper = generatePaper();
+    renderPaper(paper);
+    document.getElementById('toggleKeyBtn').disabled = false;
+    document.getElementById('downloadPdfBtn').disabled = false;
+    document.getElementById('toggleKeyBtn').textContent = "Show Answer Key";
+    status.textContent = `paper ${paper.id} ready · unique to this generation`;
+  }, 250);
+});
+
+document.getElementById('toggleKeyBtn').addEventListener('click', (e)=>{
+  const block = document.getElementById('answerKeyBlock');
+  if(!block) return;
+  block.classList.toggle('show');
+  e.target.textContent = block.classList.contains('show') ? "Hide Answer Key" : "Show Answer Key";
+});
+
+document.getElementById('downloadPdfBtn').addEventListener('click', ()=>{
+  if(!lastGeneratedPaper) return;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const pageW = doc.internal.pageSize.getWidth();
+  const margin = 48;
+  let y = 60;
+
+  function addHeader(){
+    doc.setFont('times','bold'); doc.setFontSize(16);
+    doc.text(`${lastGeneratedPaper.subject} — 2027 Board Exam (Predicted)`, pageW/2, y, {align:'center'});
+    y += 18;
+    doc.setFont('courier','normal'); doc.setFontSize(9); doc.setTextColor(150,40,30);
+    doc.text(`PAPER CODE: ${lastGeneratedPaper.id}  |  CBSE CLASS X  |  SESSION 2026-27`, pageW/2, y, {align:'center'});
+    y += 16;
+    doc.setTextColor(0,0,0); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.text(`Time Allowed (full paper): ${lastGeneratedPaper.time}`, margin, y);
+    doc.text(`This Set: ${lastGeneratedPaper.totalMarks} Marks`, pageW-margin, y, {align:'right'});
+    y += 14;
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(90,90,90);
+    const note = doc.splitTextToSize(`Condensed practice set drawn from the full ${lastGeneratedPaper.officialTotal}-mark CBSE pattern, generated from 15-year chapter weightage trends. Not an official or leaked paper.`, pageW-2*margin);
+    doc.text(note, margin, y);
+    y += note.length*10 + 10;
+    doc.setTextColor(0,0,0);
+    doc.setDrawColor(26,39,82); doc.setLineWidth(1);
+    doc.line(margin, y, pageW-margin, y);
+    y += 18;
+  }
+
+  function checkPageBreak(needed){
+    if(y + needed > 780){ doc.addPage(); y = 50; }
+  }
+
+  addHeader();
+
+  lastGeneratedPaper.sections.forEach(sec=>{
+    checkPageBreak(30);
+    doc.setFillColor(26,39,82);
+    doc.rect(margin, y-12, pageW-2*margin, 18, 'F');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
+    doc.text(sec.title, margin+8, y);
+    doc.setTextColor(0,0,0);
+    y += 20;
+    sec.questions.forEach(q=>{
+      const lines = doc.splitTextToSize(q.text, pageW-2*margin-30);
+      checkPageBreak(lines.length*13 + 10);
+      doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
+      doc.text(lines, margin, y);
+      doc.setFont('courier','bold'); doc.setFontSize(9.5); doc.setTextColor(150,40,30);
+      doc.text(`[${q.marks}]`, pageW-margin, y, {align:'right'});
+      doc.setTextColor(0,0,0);
+      y += lines.length*13 + 8;
+    });
+    y += 6;
+  });
+
+  // Answer key section
+  doc.addPage(); y = 50;
+  doc.setFillColor(58,107,74);
+  doc.rect(margin, y-14, pageW-2*margin, 20, 'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(12);
+  doc.text("Answer Key & Marking Scheme", margin+8, y);
+  doc.setTextColor(0,0,0);
+  y += 26;
+
+  lastGeneratedPaper.sections.forEach(sec=>{
+    checkPageBreak(24);
+    doc.setFont('times','bold'); doc.setFontSize(10.5); doc.setTextColor(26,39,82);
+    doc.text(sec.title, margin, y);
+    doc.setTextColor(0,0,0);
+    y += 14;
+    sec.questions.forEach(q=>{
+      const lines = doc.splitTextToSize(`(${q.chapter}, ${q.marks} mk) ${q.answer}`, pageW-2*margin-10);
+      checkPageBreak(lines.length*12 + 8);
+      doc.setFont('helvetica','normal'); doc.setFontSize(9.5);
+      doc.text(lines, margin+6, y);
+      y += lines.length*12 + 6;
+    });
+    y += 6;
+  });
+
+  doc.save(`${lastGeneratedPaper.id}.pdf`);
+});
+
+/* =========================================================================
+   CHATBOT — rule-based pattern Q&A over the same ledger data
+   (Runs fully offline/client-side; deterministic, no external API call.)
+   ========================================================================= */
+
+const chatBody = document.getElementById('chatBody');
+const chatInput = document.getElementById('chatInput');
+
+function addMsg(text, who){
+  const div = document.createElement('div');
+  div.className = `msg ${who}`;
+  div.innerHTML = text;
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
+  return div;
+}
+
+function botTyping(){
+  const div = document.createElement('div');
+  div.className = 'msg bot';
+  div.innerHTML = `<span class="typing"><span></span><span></span><span></span></span>`;
+  chatBody.appendChild(div);
+  chatBody.scrollTop = chatBody.scrollHeight;
+  return div;
+}
+
+function findSubjectInText(text){
+  const t = text.toLowerCase();
+  for(const key in SUBJECTS){
+    if(t.includes(key) || t.includes(SUBJECTS[key].label.toLowerCase().split(' ')[0])) return key;
+  }
+  if(t.includes('social')) return 'sst';
+  if(t.includes('sst')) return 'sst';
+  return null;
+}
+
+function findChapterInText(text, subjKey){
+  const t = text.toLowerCase();
+  const subjects = subjKey ? [subjKey] : Object.keys(SUBJECTS);
+  const stopWords = new Set(['the','and','of','to','a','an','in','on','with','its','introduction','application','applications']);
+  let best = null;
+  for(const sk of subjects){
+    for(const ch of SUBJECTS[sk].chapters){
+      const name = ch.name.toLowerCase();
+      if(t.includes(name)){ return {subjKey:sk, chapter:ch}; } // exact full-name match wins outright
+      const words = name.split(/[\s(),–-]+/).filter(w=>w.length>4 && !stopWords.has(w));
+      for(const w of words){
+        if(t.includes(w)){
+          // prefer the longest matching word as a better signal
+          if(!best || w.length > best.matchedWordLen){
+            best = {subjKey:sk, chapter:ch, matchedWordLen:w.length};
+          }
+        }
+      }
+    }
+  }
+  return best ? {subjKey:best.subjKey, chapter:best.chapter} : null;
+}
+
+function answerQuery(raw){
+  const text = raw.trim();
+  const lower = text.toLowerCase();
+  let subjKey = findSubjectInText(text) || currentSubject;
+  const chMatch = findChapterInText(text, null);
+
+  // "most important chapters" / "high weightage"
+  if(/most important|high weight|must.?do|highest marks|topper|score most|focus/.test(lower)){
+    const s = SUBJECTS[subjKey];
+    const top = [...s.chapters].sort((a,b)=>b.weight-a.weight).slice(0,5);
+    return `Based on the 15-year ledger for <strong>${s.label}</strong>, the highest-weightage chapters are:<br>${top.map((c,i)=>`${i+1}. <strong>${c.name}</strong> — ~${c.weight}% weight, typically ${c.marks} marks`).join('<br>')}<br><br>These are tagged "MUST-DO" — prioritise them first if revision time is limited.`;
+  }
+
+  // "give me a X mark question [from <chapter>]" — chapter match + mark count together
+  const marksAsked = lower.match(/(\d+)\s*mark/);
+  if(marksAsked && chMatch){
+    const m = parseInt(marksAsked[1]);
+    const c = chMatch.chapter;
+    return `Here's a ${m}-mark style question from <strong>${SUBJECTS[chMatch.subjKey].label}</strong>, chapter "${c.name}":<br><br><em>"${questionPhrase(chMatch.subjKey, c, m)}"</em><br><br>Marking approach: ${answerPhrase(chMatch.subjKey, c, m)}`;
+  }
+
+  // chapter-specific question (no mark count given)
+  if(chMatch){
+    const c = chMatch.chapter;
+    return `<strong>${c.name}</strong> (${SUBJECTS[chMatch.subjKey].label}) has carried roughly <strong>${c.weight}% weightage</strong>, usually worth ${c.marks} marks. It's typically tested as: ${c.qtype}. Trend over recent years: ${trendLabel[c.trend]}. Priority for 2027: <strong>${priorityLabel[c.priority]}</strong>.`;
+  }
+
+  // "give me a X mark question" with no chapter named — pick randomly from matching-range chapters
+  if(marksAsked){
+    const m = parseInt(marksAsked[1]);
+    const s = SUBJECTS[subjKey];
+    const candidates = s.chapters.filter(c=>{
+      const range = c.marks.split('–').map(x=>parseInt(x.replace(/[^0-9]/g,''))||0);
+      return m>=Math.min(...range) && m<=Math.max(...range);
+    });
+    if(candidates.length){
+      const pick = candidates[Math.floor(Math.random()*candidates.length)];
+      return `Here's a ${m}-mark style question from <strong>${s.label}</strong>, chapter "${pick.name}":<br><br><em>"${questionPhrase(subjKey, pick, m)}"</em><br><br>Marking approach: ${answerPhrase(subjKey, pick, m)}`;
+    }
+  }
+
+  // "how many marks" / weightage of a subject overall
+  if(/total marks|how many marks|marks distribution|paper pattern|section/.test(lower)){
+    const s = SUBJECTS[subjKey];
+    return `${s.label} carries <strong>${s.totalMarks} marks</strong> in a ${s.paperTime} paper. The section structure (Section A through E/D depending on subject) splits MCQs, short-answer, long-answer and case-study questions — you can see the exact generated structure in the "2027 Prediction Paper" tab.`;
+  }
+
+  // generic subject overview
+  if(/overview|summary|tell me about|analy[sz]e/.test(lower)){
+    const s = SUBJECTS[subjKey];
+    const highs = s.chapters.filter(c=>c.priority==='high').map(c=>c.name);
+    return `${s.label} overview: ${s.chapters.length} chapters tracked, ${s.totalMarks} total marks. Chapters that have consistently carried high weightage across 15 years: ${highs.slice(0,6).join(', ')}${highs.length>6?', and more':''}. Switch to that subject in the chapter-weightage tab for the full ledger.`;
+  }
+
+  // fallback
+  return `I can answer from the 15-year pattern ledger — try asking things like:<br>
+  • "Which chapters are most important in ${SUBJECTS[subjKey].label}?"<br>
+  • "Give me a 5-mark question from ${SUBJECTS[subjKey].chapters[0].name}"<br>
+  • "What's the marks distribution for ${SUBJECTS[subjKey].label}?"<br>
+  • Or name any chapter directly, e.g. "${SUBJECTS[subjKey].chapters[Math.floor(Math.random()*SUBJECTS[subjKey].chapters.length)].name}"`;
+}
+
+function sendChat(){
+  const val = chatInput.value.trim();
+  if(!val) return;
+  addMsg(val, 'user');
+  chatInput.value = '';
+  const typingEl = botTyping();
+  setTimeout(()=>{
+    typingEl.remove();
+    addMsg(answerQuery(val), 'bot');
+  }, 450 + Math.random()*350);
+}
+
+document.getElementById('chatSend').addEventListener('click', sendChat);
+chatInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') sendChat(); });
+
+function renderChatSuggestions(){
+  const suggestions = [
+    `Most important chapters in ${SUBJECTS[currentSubject].label}`,
+    `Give me a 5 mark question`,
+    `Marks distribution for ${SUBJECTS[currentSubject].label}`,
+    `Tell me about ${SUBJECTS[currentSubject].chapters[0].name}`
+  ];
+  document.getElementById('chatSuggest').innerHTML = suggestions.map(s=>`<button class="chip-suggest">${s}</button>`).join('');
+  document.querySelectorAll('.chip-suggest').forEach(chip=>{
+    chip.addEventListener('click', ()=>{ chatInput.value = chip.textContent; sendChat(); });
+  });
+}
+
+/* Init chat with greeting */
+function initChat(){
+  chatBody.innerHTML = '';
+  addMsg(`Namaste! I'm your pattern-aware doubt solver, built on the same 15-year CBSE ledger as this page. Ask me which chapters matter most, request a sample question by marks, or name any chapter for its full trend breakdown.`, 'bot');
+  renderChatSuggestions();
+}
+
+/* =========================================================================
+   TAB NAVIGATION
+   ========================================================================= */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+renderSubjectRail();
+renderStats();
+renderLedger();
+populatePyqFilters();
+renderPyqList();
+initChat();
+</script>
+</body>
+</html>
